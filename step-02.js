@@ -24,7 +24,7 @@ module.exports = function (fileInfo, api, options) {
   // ast#forEach(callback: fn(path: NodePath))
   // https://github.com/facebook/jscodeshift/blob/master/src/Collection.js#L74
   ast
-    .find(j.CallExpression, isLodashExpression)
+    .find(j.CallExpression, isLodashCallExpression)
     .forEach(path => {
       console.log(path.node);
     });
@@ -35,6 +35,6 @@ module.exports = function (fileInfo, api, options) {
 /**
  * Checks if this node is lodash expression like _.forEach()
  */
-function isLodashExpression(node) {
+function isLodashCallExpression(node) {
   return true;
 }

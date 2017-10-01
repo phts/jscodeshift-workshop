@@ -17,32 +17,42 @@ module.exports = function (fileInfo, api, options) {
   const ast = j(fileInfo.source);
 
   ast
-    .find(j.CallExpression, isLodashExpression)
-    .forEach(transformExpression(j));
+    .find(j.CallExpression, isLodashCallExpression)
+    .filter(filterMappedMethods)
+    .filter(filterLodashExpressionWithFunction)
+    .forEach(path => {
+      // ADDED:
+      transform(j, path);
+    });
 
   return ast.toSource();
 };
 
-function transformExpression(j) {
-  return path => {
-    const methodName = path.node.callee.property.name;
-    const nativeMapping = NATIVE_METHODS[methodName];
-    if (nativeMapping) {
-      transformNativeMethod(j, path);
-    }
-  };
-}
-
-function isLodashExpression(node) {
+function isLodashCallExpression(node) {
   return (
-    node.type === 'CallExpression' &&
     node.callee.type === 'MemberExpression' &&
     node.callee.object &&
     node.callee.object.name === '_'
   );
 }
 
-function transformNativeMethod(j, path) {
+function filterMappedMethods(path) {
+  const methodName = path.node.callee.property.name;
+  return !!NATIVE_METHODS[methodName];
+}
+
+function filterLodashExpressionWithFunction(path) {
+  return (
+    path.node.arguments.length === 2 &&
+    (
+      path.node.arguments[1].type === 'FunctionExpression' ||
+      path.node.arguments[1].type === 'ArrowFunctionExpression'
+    )
+  );
+}
+
+// ADDED:
+function transform(j, path) {
   const methodName = path.node.callee.property.name;
   const nativeMapping = NATIVE_METHODS[methodName];
 
@@ -67,8 +77,3 @@ function transformNativeMethod(j, path) {
     )
   );
 }
-
-// There is a known issue. It transforms statements like _.map(items, 'field') to items.map('field') which
-// is wrong syntax.
-// We have to transform only if the second argument is FunctionExpression or ArrowFunctionExpression.
-// It will be fixed in the next step.

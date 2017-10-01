@@ -1,9 +1,3 @@
-/*
- * Jscodeshift workshop.
- * Target file to transform.
- */
-
-
 // These should be transformed to native methods:
 _.forEach(items, it => process(it));
 _.forEach(items, function(it) {
