@@ -25,8 +25,8 @@ module.exports = function (fileInfo, api, options) {
   // https://github.com/facebook/jscodeshift/blob/master/src/Collection.js#L74
   ast
     .find(j.CallExpression, isLodashCallExpression)
-    .forEach(path => {
-      console.log(path.node);
+    .forEach((path, index) => {
+      console.log(index+1, path.node);
     });
 
   return ast.toSource();

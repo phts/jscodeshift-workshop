@@ -9,8 +9,8 @@ module.exports = function (fileInfo, api, options) {
 
   ast
     .find(j.CallExpression, isLodashCallExpression)
-    .forEach(path => {
-      console.log(path.node);
+    .forEach((path, index) => {
+      console.log(index+1, path.node);
     });
 
   return ast.toSource();
@@ -22,7 +22,7 @@ function isLodashCallExpression(node) {
   // The primary way to identify nodes is via their type.
   return (
     node.callee.type === 'MemberExpression' &&
-    node.callee.object &&
+    node.callee.object.type === 'Identifier' &&
     node.callee.object.name === '_'
   );
 }

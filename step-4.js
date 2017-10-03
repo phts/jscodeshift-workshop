@@ -24,8 +24,8 @@ module.exports = function (fileInfo, api, options) {
     // https://github.com/facebook/jscodeshift/blob/master/src/Collection.js#L64
     .filter(filterMappedMethods)
     .filter(filterLodashExpressionWithFunction)
-    .forEach(path => {
-      console.log(path.node);
+    .forEach((path, index) => {
+      console.log(index+1, path.node);
     });
 
   return ast.toSource();
@@ -34,7 +34,7 @@ module.exports = function (fileInfo, api, options) {
 function isLodashCallExpression(node) {
   return (
     node.callee.type === 'MemberExpression' &&
-    node.callee.object &&
+    node.callee.object.type === 'Identifier' &&
     node.callee.object.name === '_'
   );
 }

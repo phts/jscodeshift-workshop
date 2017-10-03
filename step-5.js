@@ -31,7 +31,7 @@ module.exports = function (fileInfo, api, options) {
 function isLodashCallExpression(node) {
   return (
     node.callee.type === 'MemberExpression' &&
-    node.callee.object &&
+    node.callee.object.type === 'Identifier' &&
     node.callee.object.name === '_'
   );
 }
